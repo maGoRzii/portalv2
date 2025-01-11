@@ -19,7 +19,7 @@ export function LandingPage() {
             Portal Jonquera 16549
           </h1>
           <p className="text-lg text-gray-600">
-            Gestiona tus solicitudes de manera fácil y eficiente
+            Gestiona tus solicitudes de manera fácil y eficien
           </p>
         </div>
 
