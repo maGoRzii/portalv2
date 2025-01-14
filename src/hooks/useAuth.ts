@@ -58,10 +58,9 @@ export function useAuth() {
 
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      await supabase.auth.signOut();
       setUser(null);
-      window.location.href = '/admin/login';
+      // Usar navigate en el componente en lugar de window.location
       toast.success('Sesión cerrada');
     } catch (error) {
       console.error('Sign out error:', error);

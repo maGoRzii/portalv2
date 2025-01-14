@@ -1,11 +1,19 @@
 import React from 'react';
 import { LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface DashboardHeaderProps {
   onLogout: () => void;
 }
 
 export function DashboardHeader({ onLogout }: DashboardHeaderProps) {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await onLogout();
+    navigate('/admin/login');
+  };
+
   return (
     <header className="bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -14,7 +22,7 @@ export function DashboardHeader({ onLogout }: DashboardHeaderProps) {
             Panel de Administración
           </h1>
           <button
-            onClick={onLogout}
+            onClick={handleLogout}
             className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg
                      text-sm font-medium text-white bg-gradient-subtle hover:bg-gradient-subtle-hover
                      transition-all duration-200"
