@@ -7,6 +7,7 @@ import { EmployeeForm } from './EmployeeForm';
 import { EmployeeTable } from './EmployeeTable';
 import { EmployeeFilters } from './EmployeeFilters';
 import { generateEmployeesPDF } from '../../../utils/employeePdf';
+import { NotificationBell } from './NotificationBell';
 
 // Define available groups and positions
 const GROUPS = [
@@ -41,6 +42,7 @@ const POSITIONS = [
 
 export function EmployeeManagement() {
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [modifications, setModifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
@@ -53,6 +55,7 @@ export function EmployeeManagement() {
 
   useEffect(() => {
     loadEmployees();
+    loadModifications();
   }, []);
 
   const loadEmployees = async () => {
@@ -69,6 +72,25 @@ export function EmployeeManagement() {
       toast.error('Error al cargar los empleados');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadModifications = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('contract_hours_modifications')
+        .select(`
+          *,
+          employees!inner (
+            full_name
+          )
+        `)
+        .order('end_date');
+
+      if (error) throw error;
+      setModifications(data || []);
+    } catch (error) {
+      console.error('Error loading modifications:', error);
     }
   };
 
@@ -133,7 +155,11 @@ export function EmployeeManagement() {
             Gestión de Empleados
           </h2>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
+          <NotificationBell 
+            employees={employees}
+            modifications={modifications}
+          />
           <button
             onClick={handleExportPDF}
             className="inline-flex items-center px-4 py-2 border border-transparent 

@@ -40,13 +40,36 @@ export function RequestDetailsModal({
   };
 
   const handleArchive = async () => {
-    await onArchive(request.id, !request.archived);
-    onClose();
+    try {
+      const { error } = await supabase
+        .from('requests')
+        .update({ archived: !request.archived })
+        .eq('id', request.id);
+
+      if (error) throw error;
+      await onArchive(request.id, !request.archived);
+      onClose();
+    } catch (error) {
+      console.error('Error archiving request:', error);
+      toast.error('Error al archivar la petición');
+    }
   };
 
   const handleStatusChange = async () => {
-    await onStatusChange(request.id, request.status === 'pending' ? 'done' : 'pending');
-    onClose();
+    try {
+      const newStatus = request.status === 'pending' ? 'done' : 'pending';
+      const { error } = await supabase
+        .from('requests')
+        .update({ status: newStatus })
+        .eq('id', request.id);
+
+      if (error) throw error;
+      await onStatusChange(request.id, newStatus);
+      onClose();
+    } catch (error) {
+      console.error('Error updating request status:', error);
+      toast.error('Error al actualizar el estado de la petición');
+    }
   };
 
   const handleDownload = async (path: string) => {

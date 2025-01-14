@@ -36,10 +36,24 @@ export function Requests() {
     setRequests(requests.filter(req => req.id !== id));
   };
 
-  const handleStatusChange = (id: string, status: RequestStatus) => {
-    setRequests(requests.map(req => 
-      req.id === id ? { ...req, status } : req
-    ));
+  const handleStatusChange = async (id: string, status: RequestStatus) => {
+    try {
+      const { error } = await supabase
+        .from('requests')
+        .update({ status })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setRequests(requests.map(req => 
+        req.id === id ? { ...req, status } : req
+      ));
+
+      toast.success(status === 'done' ? 'Petición marcada como hecha' : 'Petición marcada como pendiente');
+    } catch (error) {
+      console.error('Error updating request status:', error);
+      toast.error('Error al actualizar el estado de la petición');
+    }
   };
 
   const handleArchive = async (id: string, archived: boolean) => {
