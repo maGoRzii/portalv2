@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, FileText, Download, CheckCircle } from 'lucide-react';
+import { X, FileText, Download, CheckCircle, Archive, ArchiveRestore } from 'lucide-react';
 import { formatDate } from '../../../utils/date';
 import { RequestTypeBadge } from './RequestTypeBadge';
 import { RequestStatusBadge } from './RequestStatusBadge';
@@ -13,13 +13,15 @@ interface RequestDetailsModalProps {
   onClose: () => void;
   onDelete: (id: string) => void;
   onStatusChange: (id: string, status: RequestStatus) => void;
+  onArchive: (id: string, archived: boolean) => void;
 }
 
 export function RequestDetailsModal({ 
   request, 
   onClose, 
   onDelete,
-  onStatusChange 
+  onStatusChange,
+  onArchive
 }: RequestDetailsModalProps) {
   const handleDelete = async () => {
     try {
@@ -37,21 +39,14 @@ export function RequestDetailsModal({
     }
   };
 
-  const handleStatusChange = async () => {
-    const newStatus: RequestStatus = request.status === 'pending' ? 'done' : 'pending';
-    try {
-      const { error } = await supabase
-        .from('requests')
-        .update({ status: newStatus })
-        .eq('id', request.id);
+  const handleArchive = async () => {
+    await onArchive(request.id, !request.archived);
+    onClose();
+  };
 
-      if (error) throw error;
-      onStatusChange(request.id, newStatus);
-      toast.success(newStatus === 'done' ? 'Petición marcada como hecha' : 'Petición marcada como pendiente');
-    } catch (error) {
-      console.error('Error updating request status:', error);
-      toast.error('Error al actualizar el estado de la petición');
-    }
+  const handleStatusChange = async () => {
+    await onStatusChange(request.id, request.status === 'pending' ? 'done' : 'pending');
+    onClose();
   };
 
   const handleDownload = async (path: string) => {
@@ -85,6 +80,7 @@ export function RequestDetailsModal({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="p-6 space-y-6">
+          {/* Header */}
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <h3 className="text-lg font-medium text-gray-900">
@@ -99,6 +95,24 @@ export function RequestDetailsModal({
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <button
+                onClick={handleArchive}
+                className="inline-flex items-center px-3 py-2 border border-gray-300 
+                         rounded-md shadow-sm text-sm font-medium text-gray-700 
+                         bg-white hover:bg-gray-50"
+              >
+                {request.archived ? (
+                  <>
+                    <ArchiveRestore className="h-4 w-4 mr-2" />
+                    Desarchivar
+                  </>
+                ) : (
+                  <>
+                    <Archive className="h-4 w-4 mr-2" />
+                    Archivar
+                  </>
+                )}
+              </button>
               <button
                 onClick={handleStatusChange}
                 className={`inline-flex items-center px-3 py-2 border border-transparent text-sm 
@@ -121,8 +135,9 @@ export function RequestDetailsModal({
             </div>
           </div>
 
+          {/* Clock Card Option */}
           {request.type === 'clock_card' && request.clock_card_option && (
-            <div>
+            <div className="bg-gray-50 p-4 rounded-lg">
               <h4 className="text-sm font-medium text-gray-900 mb-2">Opción seleccionada:</h4>
               <p className="text-sm text-gray-600">
                 {getClockCardOptionLabel()}
@@ -130,35 +145,41 @@ export function RequestDetailsModal({
             </div>
           )}
 
+          {/* Message */}
           {request.message && (
-            <div>
+            <div className="bg-gray-50 p-4 rounded-lg">
               <h4 className="text-sm font-medium text-gray-900 mb-2">Mensaje:</h4>
-              <p className="text-sm text-gray-600 whitespace-pre-wrap">
-                {request.message}
-              </p>
+              <div className="prose prose-sm max-w-none">
+                <p className="text-gray-600 whitespace-pre-wrap">{request.message}</p>
+              </div>
             </div>
           )}
 
-          {request.attachments?.length > 0 && (
-            <div>
-              <h4 className="text-sm font-medium text-gray-900 mb-2">
+          {/* Attachments */}
+          {request.attachments && request.attachments.length > 0 && (
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="text-sm font-medium text-gray-900 mb-3">
                 Archivos adjuntos:
               </h4>
-              <div className="flex flex-wrap gap-2">
-                {request.attachments.map((path, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleDownload(path)}
-                    className="inline-flex items-center px-3 py-1 rounded-md text-sm
-                             text-gray-700 bg-gray-100 hover:bg-gray-200"
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    <span className="truncate max-w-[150px]">
-                      {path.split('/').pop()}
-                    </span>
-                    <Download className="h-4 w-4 ml-2" />
-                  </button>
-                ))}
+              <div className="grid gap-2">
+                {request.attachments.map((path, index) => {
+                  const fileName = path.split('/').pop() || 'archivo';
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => handleDownload(path)}
+                      className="flex items-center justify-between w-full px-4 py-2 text-sm
+                               text-gray-700 bg-white rounded-lg border border-gray-200
+                               hover:bg-gray-50 transition-colors group"
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <FileText className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
+                        <span className="truncate">{fileName}</span>
+                      </div>
+                      <Download className="h-4 w-4 text-gray-400 group-hover:text-gray-600 flex-shrink-0" />
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}

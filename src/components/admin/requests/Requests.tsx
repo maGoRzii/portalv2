@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { FileText } from 'lucide-react';
+import { FileText, Archive as ArchiveIcon } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { RequestsList } from './RequestsList';
 import { RequestTypeFilter } from './RequestTypeFilter';
 import { Request, RequestStatus } from '../../../types/request';
+import { toast } from 'react-hot-toast';
 
 export function Requests() {
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState('');
+  const [showArchived, setShowArchived] = useState(false);
 
   useEffect(() => {
     loadRequests();
@@ -40,9 +42,30 @@ export function Requests() {
     ));
   };
 
-  const filteredRequests = selectedType
-    ? requests.filter(request => request.type === selectedType)
-    : requests;
+  const handleArchive = async (id: string, archived: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('requests')
+        .update({ archived })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setRequests(requests.map(req =>
+        req.id === id ? { ...req, archived } : req
+      ));
+
+      toast.success(archived ? 'Petición archivada' : 'Petición desarchivada');
+    } catch (error) {
+      console.error('Error archiving request:', error);
+      toast.error('Error al archivar la petición');
+    }
+  };
+
+  const filteredRequests = requests.filter(request => 
+    (selectedType ? request.type === selectedType : true) &&
+    request.archived === showArchived
+  );
 
   if (loading) {
     return (
@@ -58,19 +81,35 @@ export function Requests() {
         <div className="flex items-center gap-2">
           <FileText className="h-6 w-6 text-blue-600" />
           <h2 className="text-xl font-semibold text-gray-900">
-            Peticiones / Justificantes ({filteredRequests.length})
+            {showArchived ? 'Peticiones Archivadas' : 'Peticiones'} ({filteredRequests.length})
           </h2>
         </div>
-        <RequestTypeFilter
-          value={selectedType}
-          onChange={setSelectedType}
-        />
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setShowArchived(!showArchived)}
+            className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium
+                     transition-colors duration-200 ${
+                       showArchived
+                         ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                         : 'bg-gray-700 text-white hover:bg-gray-800'
+                     }`}
+          >
+            <ArchiveIcon className="h-4 w-4 mr-2" />
+            {showArchived ? 'Ver Activas' : 'Ver Archivadas'}
+          </button>
+          <RequestTypeFilter
+            value={selectedType}
+            onChange={setSelectedType}
+          />
+        </div>
       </div>
       
       <RequestsList 
         requests={filteredRequests} 
         onDelete={handleDelete}
         onStatusChange={handleStatusChange}
+        onArchive={handleArchive}
+        showArchived={showArchived}
       />
     </div>
   );
