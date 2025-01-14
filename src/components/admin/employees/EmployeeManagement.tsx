@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Plus, UserCheck, UserMinus, Clock } from 'lucide-react';
+import { Users, Plus, UserCheck, UserMinus, Clock, Download } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { toast } from 'react-hot-toast';
 import { Employee } from '../../../types/hours';
 import { EmployeeForm } from './EmployeeForm';
 import { EmployeeTable } from './EmployeeTable';
 import { EmployeeFilters } from './EmployeeFilters';
+import { generateEmployeesPDF } from '../../../utils/employeePdf';
 
 // Define available groups and positions
 const GROUPS = [
@@ -105,6 +106,11 @@ export function EmployeeManagement() {
     return matchesSearch && matchesGroup && matchesPosition && matchesStatus;
   });
 
+  const handleExportPDF = () => {
+    generateEmployeesPDF(filteredEmployees);
+    toast.success('Listado de empleados exportado correctamente');
+  };
+
   // Count employees by status
   const activeEmployeesCount = employees.filter(emp => emp.status === 'active').length;
   const futureLeaveCount = employees.filter(emp => emp.status === 'future_leave').length;
@@ -127,15 +133,26 @@ export function EmployeeManagement() {
             Gestión de Empleados
           </h2>
         </div>
-        <button
-          onClick={() => setIsAdding(true)}
-          className="inline-flex items-center px-4 py-2 border border-transparent 
-                   rounded-md shadow-sm text-sm font-medium text-white 
-                   bg-blue-600 hover:bg-blue-700"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Añadir Empleado
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={handleExportPDF}
+            className="inline-flex items-center px-4 py-2 border border-transparent 
+                     rounded-md shadow-sm text-sm font-medium text-white 
+                     bg-green-600 hover:bg-green-700"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Exportar PDF
+          </button>
+          <button
+            onClick={() => setIsAdding(true)}
+            className="inline-flex items-center px-4 py-2 border border-transparent 
+                     rounded-md shadow-sm text-sm font-medium text-white 
+                     bg-blue-600 hover:bg-blue-700"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Añadir Empleado
+          </button>
+        </div>
       </div>
 
       {/* Employee Status Counters */}
