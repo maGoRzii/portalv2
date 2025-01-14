@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { Analytics } from '@vercel/analytics/react';
 import { LandingPage } from './pages/LandingPage';
@@ -17,7 +17,7 @@ import { TrainingGroupsPage } from './pages/TrainingGroupsPage';
 
 export default function App() {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <Toaster position="top-center" />
       <Routes>
         {/* Public Routes */}
@@ -52,9 +52,9 @@ export default function App() {
         />
 
         {/* Fallback route */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
       <Analytics />
-    </HashRouter>
+    </BrowserRouter>
   );
 }

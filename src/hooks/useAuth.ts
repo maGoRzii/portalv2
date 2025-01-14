@@ -36,7 +36,12 @@ export function useAuth() {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message === 'Invalid login credentials') {
+          throw new Error('Credenciales inválidas');
+        }
+        throw error;
+      }
 
       if (data?.user) {
         setUser(data.user);
@@ -46,6 +51,7 @@ export function useAuth() {
       return false;
     } catch (error: any) {
       console.error('Sign in error:', error);
+      toast.error(error.message || 'Error al iniciar sesión');
       throw error;
     }
   };
@@ -55,6 +61,7 @@ export function useAuth() {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       setUser(null);
+      window.location.href = '/admin/login';
       toast.success('Sesión cerrada');
     } catch (error) {
       console.error('Sign out error:', error);

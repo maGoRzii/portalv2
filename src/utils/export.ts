@@ -1,11 +1,12 @@
-import { Request } from '../types/request';
+import { HoursRecord } from '../types/hours';
 import { formatDate } from './date';
 
-function escapeCSV(value: string): string {
+function escapeCSV(value: string | number): string {
+  if (typeof value === 'number') return value.toString();
   return `"${String(value).replace(/"/g, '""')}"`;
 }
 
-function generateCSV(headers: string[], rows: string[][]): string {
+export function generateCSV(headers: string[], rows: (string | number)[][]): string {
   return [
     headers.join(','),
     ...rows.map(row => row.map(escapeCSV).join(','))
@@ -23,21 +24,27 @@ function downloadCSV(content: string, filename: string): void {
   URL.revokeObjectURL(link.href);
 }
 
-export function exportRequestsToCSV(requests: Request[], filename: string): void {
+export function exportHoursToCSV(records: HoursRecord[], employees: any[], filename: string): void {
   const headers = [
-    'Nombre',
-    'Apellidos',
-    'Mensaje',
-    'Archivos adjuntos',
-    'Fecha de solicitud'
+    'Empleado',
+    'Semana',
+    'Fecha Inicio',
+    'Fecha Fin',
+    'Horas Complementarias',
+    'Horas Devueltas',
+    'Horas Pagadas',
+    'Balance'
   ];
 
-  const rows = requests.map(request => [
-    request.first_name,
-    request.last_name,
-    request.message,
-    (request.attachments || []).map(path => path.split('/').pop() || '').join('; '),
-    formatDate(request.created_at)
+  const rows = records.map(record => [
+    employees.find(e => e.id === record.employee_id)?.full_name || 'Desconocido',
+    record.week_code,
+    formatDate(record.start_date),
+    formatDate(record.end_date),
+    record.extra_hours,
+    record.returned_hours,
+    record.paid_hours,
+    record.balance
   ]);
 
   const csvContent = generateCSV(headers, rows);

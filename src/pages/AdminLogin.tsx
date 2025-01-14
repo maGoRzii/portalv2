@@ -19,7 +19,7 @@ export function AdminLogin() {
     try {
       const success = await signIn(email, password);
       if (success) {
-        navigate('/admin/holidays', { replace: true });
+        navigate('/admin', { replace: true });
       }
     } catch (err: any) {
       console.error('Login error:', err);

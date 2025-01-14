@@ -1,45 +1,99 @@
 import React from 'react';
-import { Calendar, Shirt, Truck, FileText, Settings, Layout, GraduationCap } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Calendar, Shirt, Truck, FileText, Settings, Layout, GraduationCap, Users, Clock, Shield, Home } from 'lucide-react';
 import { NavItem } from './NavItem';
+import { useRole } from '../../hooks/useRole';
 
 export function DashboardNav() {
+  const { hasPermission, role } = useRole();
+
   return (
     <nav className="space-y-1">
       <NavItem
-        icon={<Calendar />}
-        label="Festivos"
-        path="/admin/holidays"
+        icon={<Home />}
+        label="Inicio"
+        path="/admin"
       />
-      <NavItem
-        icon={<Shirt />}
-        label="Uniformes"
-        path="/admin/uniforms"
-      />
-      <NavItem
-        icon={<Truck />}
-        label="Lanzadera"
-        path="/admin/lanzadera"
-      />
-      <NavItem
-        icon={<FileText />}
-        label="Peticiones"
-        path="/admin/requests"
-      />
-      <NavItem
-        icon={<Layout />}
-        label="Tareas"
-        path="/admin/tasks"
-      />
-      <NavItem
-        icon={<GraduationCap />}
-        label="Formación"
-        path="/admin/training"
-      />
-      <NavItem
-        icon={<Settings />}
-        label="Ajustes"
-        path="/admin/settings"
-      />
+
+      {hasPermission('holidays') && (
+        <NavItem
+          icon={<Calendar />}
+          label="Festivos"
+          path="/admin/holidays"
+        />
+      )}
+      
+      {hasPermission('uniforms') && (
+        <NavItem
+          icon={<Shirt />}
+          label="Uniformes"
+          path="/admin/uniforms"
+        />
+      )}
+      
+      {hasPermission('lanzadera') && (
+        <NavItem
+          icon={<Truck />}
+          label="Lanzadera"
+          path="/admin/lanzadera"
+        />
+      )}
+      
+      {hasPermission('requests') && (
+        <NavItem
+          icon={<FileText />}
+          label="Peticiones"
+          path="/admin/requests"
+        />
+      )}
+      
+      {hasPermission('tasks') && (
+        <NavItem
+          icon={<Layout />}
+          label="Tareas"
+          path="/admin/tasks"
+        />
+      )}
+      
+      {hasPermission('hours') && (
+        <NavItem
+          icon={<Clock />}
+          label="Horas"
+          path="/admin/hours"
+        />
+      )}
+      
+      {hasPermission('employees') && (
+        <NavItem
+          icon={<Users />}
+          label="Empleados"
+          path="/admin/employees"
+        />
+      )}
+      
+      {hasPermission('training') && (
+        <NavItem
+          icon={<GraduationCap />}
+          label="Formación"
+          path="/admin/training"
+        />
+      )}
+
+      {role === 'developer' && (
+        <NavItem
+          icon={<Shield />}
+          label="Roles"
+          path="/admin/roles"
+        />
+      )}
+      
+      {hasPermission('settings') && (
+        <NavItem
+          icon={<Settings />}
+          label="Ajustes"
+          path="/admin/settings"
+        />
+      )}
     </nav>
   );
 }
