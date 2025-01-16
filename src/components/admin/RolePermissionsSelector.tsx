@@ -1,23 +1,19 @@
 import React from 'react';
 import { Check } from 'lucide-react';
 
-interface Permission {
-  id: string;
-  label: string;
-}
-
-const PERMISSIONS: Permission[] = [
-  { id: 'holidays', label: 'Festivos' },
-  { id: 'uniforms', label: 'Uniformes' },
-  { id: 'lanzadera', label: 'Lanzadera' },
-  { id: 'requests', label: 'Peticiones' },
-  { id: 'tasks', label: 'Tareas' },
-  { id: 'hours', label: 'Horas' },
-  { id: 'employees', label: 'Empleados' },
-  { id: 'training', label: 'Formación' },
-  { id: 'roles', label: 'Roles' },
-  { id: 'settings', label: 'Ajustes' }
-];
+const PERMISSIONS = [
+  { id: 'holidays', label: 'Festivos', description: 'Gestión de solicitudes de días festivos' },
+  { id: 'uniforms', label: 'Uniformes', description: 'Gestión de solicitudes de uniformes' },
+  { id: 'lanzadera', label: 'Lanzadera', description: 'Control de fichajes de lanzadera' },
+  { id: 'requests', label: 'Peticiones', description: 'Gestión de peticiones y justificantes' },
+  { id: 'tasks', label: 'Tareas', description: 'Tablero de tareas y seguimiento' },
+  { id: 'hours', label: 'Horas', description: 'Control de horas complementarias' },
+  { id: 'employees', label: 'Empleados', description: 'Gestión de empleados' },
+  { id: 'vacations', label: 'Vacaciones', description: 'Gestión de vacaciones de empleados' },
+  { id: 'training', label: 'Formación', description: 'Gestión de contenido formativo' },
+  { id: 'roles', label: 'Roles', description: 'Gestión de roles y permisos' },
+  { id: 'settings', label: 'Ajustes', description: 'Configuración del sistema' }
+] as const;
 
 interface RolePermissionsSelectorProps {
   selectedPermissions: string[];
@@ -38,12 +34,17 @@ export function RolePermissionsSelector({ selectedPermissions, onChange }: RoleP
       {PERMISSIONS.map((permission) => (
         <label
           key={permission.id}
-          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg 
-                   hover:bg-gray-100 transition-colors cursor-pointer"
+          className="flex items-center justify-between p-4 bg-gray-50 rounded-lg 
+                   hover:bg-gray-100 transition-colors cursor-pointer group"
         >
-          <span className="text-gray-700">{permission.label}</span>
+          <div className="flex-1">
+            <span className="text-gray-900 font-medium block">{permission.label}</span>
+            <span className="text-sm text-gray-500 group-hover:text-gray-700 transition-colors">
+              {permission.description}
+            </span>
+          </div>
           <div 
-            className={`w-6 h-6 rounded flex items-center justify-center transition-colors
+            className={`ml-4 w-6 h-6 rounded flex items-center justify-center transition-colors
               ${selectedPermissions.includes(permission.id)
                 ? 'bg-blue-600 text-white'
                 : 'bg-gray-200'

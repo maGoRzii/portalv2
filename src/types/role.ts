@@ -20,13 +20,15 @@ export const ROLE_PERMISSIONS = {
     'hours',
     'employees',
     'training',
-    'settings'
+    'settings',
+    'vacations'
   ],
   administrative: [
     'holidays',
     'uniforms',
     'requests',
-    'tasks'
+    'tasks',
+    'vacations'
   ],
   manager: [
     'holidays',
@@ -34,6 +36,7 @@ export const ROLE_PERMISSIONS = {
     'lanzadera',
     'requests',
     'tasks',
-    'employees'
+    'employees',
+    'vacations'
   ]
 } as const;
