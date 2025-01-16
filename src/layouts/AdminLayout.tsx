@@ -10,6 +10,7 @@ import { Requests } from '../components/admin/requests/Requests';
 import { TaskBoard } from '../components/admin/tasks/TaskBoard';
 import { HoursManagement } from '../components/admin/hours/HoursManagement';
 import { EmployeeManagement } from '../components/admin/employees/EmployeeManagement';
+import { VacationManagement } from '../components/admin/vacations/VacationManagement';
 import { TrainingGroupsPage } from '../pages/admin/TrainingGroupsPage';
 import { TrainingEntriesPage } from '../pages/admin/TrainingEntriesPage';
 import { FeatureFlags } from '../components/admin/FeatureFlags';
@@ -44,6 +45,7 @@ export function AdminLayout() {
               <Route path="tasks" element={<ProtectedRoute requiredPermission="tasks"><TaskBoard /></ProtectedRoute>} />
               <Route path="hours" element={<ProtectedRoute requiredPermission="hours"><HoursManagement /></ProtectedRoute>} />
               <Route path="employees" element={<ProtectedRoute requiredPermission="employees"><EmployeeManagement /></ProtectedRoute>} />
+              <Route path="vacations" element={<ProtectedRoute requiredPermission="vacations"><VacationManagement /></ProtectedRoute>} />
               <Route path="training" element={<ProtectedRoute requiredPermission="training"><TrainingGroupsPage /></ProtectedRoute>} />
               <Route path="training/:slug" element={<ProtectedRoute requiredPermission="training"><TrainingEntriesPage /></ProtectedRoute>} />
               <Route path="settings" element={<ProtectedRoute requiredPermission="settings"><FeatureFlags /></ProtectedRoute>} />

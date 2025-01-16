@@ -50,9 +50,15 @@ export function generateEmployeesPDF(employees: Employee[]) {
     }
   });
 
-  // Add total count
+  // Calculate total hours
+  const totalHours = sortedEmployees.reduce((sum, employee) => 
+    sum + (employee.contract_hours || 0), 0
+  );
+
+  // Add summary
   const finalY = (doc as any).lastAutoTable.finalY || 40;
   doc.text(`Total empleados: ${sortedEmployees.length}`, 14, finalY + 10);
+  doc.text(`Total horas: ${totalHours}h`, 14, finalY + 20);
 
   // Download the PDF
   doc.save('listado-empleados.pdf');

@@ -1,13 +1,16 @@
 import React from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useRole } from '../../hooks/useRole';
-import { GraduationCap, Calendar, Shirt, Truck, FileText, Users, Clock, Settings, Shield, Layout } from 'lucide-react';
+import { GraduationCap, Calendar, Shirt, Truck, FileText, Users, Clock, Settings, Shield, Layout, Palmtree } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { VersionUpdatePopup } from './VersionUpdatePopup';
+import { useVersionPopup } from '../../hooks/useVersionPopup';
 
 export function WelcomeDashboard() {
   const { user } = useAuth();
   const { hasPermission } = useRole();
   const navigate = useNavigate();
+  const { showPopup, handleClose } = useVersionPopup();
 
   const modules = [
     {
@@ -67,6 +70,14 @@ export function WelcomeDashboard() {
       path: '/admin/hours'
     },
     {
+      id: 'vacations',
+      name: 'Vacaciones',
+      description: 'Gestión de vacaciones de empleados',
+      icon: Palmtree,
+      color: 'bg-teal-500',
+      path: '/admin/vacations'
+    },
+    {
       id: 'training',
       name: 'Formación',
       description: 'Gestión de contenido formativo',
@@ -117,6 +128,8 @@ export function WelcomeDashboard() {
           </button>
         ))}
       </div>
+
+      {showPopup && <VersionUpdatePopup onClose={handleClose} />}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Calendar, Shirt, Truck, FileText, Settings, Layout, GraduationCap, Users, Clock, Shield, Home } from 'lucide-react';
+import { Calendar, Shirt, Truck, FileText, Settings, Layout, GraduationCap, Users, Clock, Shield, Home, Palmtree } from 'lucide-react';
 import { NavItem } from './NavItem';
 import { useRole } from '../../hooks/useRole';
 
@@ -68,6 +68,14 @@ export function DashboardNav() {
           icon={<Users />}
           label="Empleados"
           path="/admin/employees"
+        />
+      )}
+
+      {hasPermission('vacations') && (
+        <NavItem
+          icon={<Palmtree />}
+          label="Vacaciones"
+          path="/admin/vacations"
         />
       )}
       

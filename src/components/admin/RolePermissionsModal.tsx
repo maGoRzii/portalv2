@@ -1,32 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { X, Check } from 'lucide-react';
+import { X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { toast } from 'react-hot-toast';
-
-interface Permission {
-  id: string;
-  label: string;
-}
-
-const PERMISSIONS: Permission[] = [
-  { id: 'holidays', label: 'Festivos' },
-  { id: 'uniforms', label: 'Uniformes' },
-  { id: 'lanzadera', label: 'Lanzadera' },
-  { id: 'requests', label: 'Peticiones' },
-  { id: 'tasks', label: 'Tareas' },
-  { id: 'hours', label: 'Horas' },
-  { id: 'employees', label: 'Empleados' },
-  { id: 'training', label: 'Formación' },
-  { id: 'roles', label: 'Roles' },
-  { id: 'settings', label: 'Ajustes' }
-];
+import { RolePermissionsSelector } from './RolePermissionsSelector';
 
 interface RolePermissionsModalProps {
   role: string;
+  roleName: string;
   onClose: () => void;
 }
 
-export function RolePermissionsModal({ role, onClose }: RolePermissionsModalProps) {
+export function RolePermissionsModal({ role, roleName, onClose }: RolePermissionsModalProps) {
   const [permissions, setPermissions] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -100,7 +84,7 @@ export function RolePermissionsModal({ role, onClose }: RolePermissionsModalProp
       <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between p-6 border-b">
           <h3 className="text-lg font-medium">
-            Permisos del rol: <span className="font-semibold">{role}</span>
+            Permisos del rol: <span className="font-semibold">{roleName}</span>
           </h3>
           <button
             onClick={onClose}
@@ -111,28 +95,10 @@ export function RolePermissionsModal({ role, onClose }: RolePermissionsModalProp
         </div>
 
         <div className="flex-1 overflow-y-auto p-6">
-          <div className="space-y-4">
-            {PERMISSIONS.map((permission) => (
-              <label
-                key={permission.id}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-              >
-                <span className="text-gray-700">{permission.label}</span>
-                <div 
-                  className={`w-6 h-6 rounded flex items-center justify-center transition-colors
-                    ${permissions.includes(permission.id)
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200'
-                    }`}
-                  onClick={() => !saving && togglePermission(permission.id)}
-                >
-                  {permissions.includes(permission.id) && (
-                    <Check className="h-4 w-4" />
-                  )}
-                </div>
-              </label>
-            ))}
-          </div>
+          <RolePermissionsSelector
+            selectedPermissions={permissions}
+            onChange={togglePermission}
+          />
         </div>
       </div>
     </div>

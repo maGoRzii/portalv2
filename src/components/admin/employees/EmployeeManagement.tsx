@@ -8,6 +8,7 @@ import { EmployeeTable } from './EmployeeTable';
 import { EmployeeFilters } from './EmployeeFilters';
 import { generateEmployeesPDF } from '../../../utils/employeePdf';
 import { NotificationBell } from './NotificationBell';
+import { useEmployeeStatusCheck } from '../../../hooks/useEmployeeStatusCheck';
 
 // Define available groups and positions
 const GROUPS = [
@@ -46,6 +47,9 @@ export function EmployeeManagement() {
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
+
+  // Use the status check hook
+  useEmployeeStatusCheck();
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState('');
