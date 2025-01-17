@@ -1,12 +1,14 @@
 export interface UniformSize {
   id: string;
-  label: string;
+  category_id: string;
+  item_id: string;
+  size_id: string;
+  size_label: string;
 }
 
 export interface UniformItem {
   id: string;
   name: string;
-  sizes: UniformSize[];
 }
 
 export interface UniformCategory {
@@ -15,13 +17,9 @@ export interface UniformCategory {
   items: UniformItem[];
 }
 
-export interface UniformRequest {
-  id?: string;
-  first_name: string;
-  last_name: string;
-  items: {
-    item_id: string;
-    size: string;
-  }[];
-  created_at?: string;
+export interface UniformFormData {
+  firstName: string;
+  lastName: string;
+  selectedCategory: string;
+  selectedSizes: Record<string, string>;
 }

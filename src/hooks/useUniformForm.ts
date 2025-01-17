@@ -2,24 +2,28 @@ import { useState } from 'react';
 import { FormData } from '../types';
 import { supabase } from '../lib/supabase';
 import { toast } from 'react-hot-toast';
-import { handleSupabaseError } from '../utils/error';
 
 export function useUniformForm() {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<FormData & { selectedCategory: string }>({
     firstName: '',
     lastName: '',
     comments: '',
+    selectedCategory: '',
   });
 
-  const [selectedItems, setSelectedItems] = useState<Record<string, string>>({});
+  const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleFormDataChange = (data: Partial<FormData>) => {
     setFormData(prev => ({ ...prev, ...data }));
   };
 
+  const handleCategorySelect = (categoryId: string) => {
+    setFormData(prev => ({ ...prev, selectedCategory: categoryId }));
+  };
+
   const handleItemSelect = (itemId: string, size: string) => {
-    setSelectedItems(prev => ({
+    setSelectedSizes(prev => ({
       ...prev,
       [itemId]: size,
     }));
@@ -31,8 +35,8 @@ export function useUniformForm() {
       return false;
     }
 
-    const selectedSizes = Object.values(selectedItems).filter(Boolean);
-    if (selectedSizes.length === 0) {
+    const selectedItems = Object.values(selectedSizes).filter(Boolean);
+    if (selectedItems.length === 0) {
       toast.error('Por favor, selecciona al menos una prenda');
       return false;
     }
@@ -40,9 +44,7 @@ export function useUniformForm() {
     return true;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleSubmit = async () => {
     if (!validateForm()) {
       return;
     }
@@ -59,15 +61,9 @@ export function useUniformForm() {
         .select()
         .single();
 
-      if (submissionError) {
-        handleSupabaseError(submissionError);
-      }
+      if (submissionError) throw submissionError;
 
-      if (!submission) {
-        throw new Error('No se recibió respuesta del servidor');
-      }
-
-      const uniformItems = Object.entries(selectedItems)
+      const uniformItems = Object.entries(selectedSizes)
         .filter(([_, size]) => size)
         .map(([itemId, size]) => ({
           request_id: submission.id,
@@ -79,18 +75,16 @@ export function useUniformForm() {
         .from('uniform_items')
         .insert(uniformItems);
 
-      if (itemsError) {
-        handleSupabaseError(itemsError);
-      }
+      if (itemsError) throw itemsError;
 
       toast.success('¡Solicitud enviada con éxito!');
       
       // Reset form
-      setFormData({ firstName: '', lastName: '', comments: '' });
-      setSelectedItems({});
+      setFormData({ firstName: '', lastName: '', comments: '', selectedCategory: '' });
+      setSelectedSizes({});
     } catch (error: any) {
       console.error('Error submitting form:', error);
-      toast.error(error.message || 'Error al enviar el formulario. Por favor, inténtalo de nuevo.');
+      toast.error('Error al enviar el formulario. Por favor, inténtalo de nuevo.');
     } finally {
       setIsSubmitting(false);
     }
@@ -98,10 +92,11 @@ export function useUniformForm() {
 
   return {
     formData,
-    selectedItems,
+    selectedSizes,
     isSubmitting,
     handleFormDataChange,
     handleItemSelect,
     handleSubmit,
+    handleCategorySelect,
   };
 }
