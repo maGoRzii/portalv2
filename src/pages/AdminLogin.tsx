@@ -40,10 +40,10 @@ export function AdminLogin() {
               <Lock className="h-6 w-6 text-white stroke-[1.5]" />
             </div>
             <h2 className="mt-6 text-center text-3xl font-light text-gray-900">
-              Acceso Administrador
+              Acceso Empleados
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
-              Ingresa con tu código de empleado o email
+              Ingresa con tu código de empleado
             </p>
           </div>
           
@@ -63,7 +63,7 @@ export function AdminLogin() {
                              border-gray-300 placeholder-gray-500 text-gray-900
                              focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 focus:z-10 
                              sm:text-sm"
-                    placeholder="Código de empleado o email"
+                    placeholder="Código de empleado"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     disabled={isLoading}
@@ -116,7 +116,7 @@ export function AdminLogin() {
 
             <div className="text-center">
               <p className="text-sm text-gray-500">
-                Si no tienes usuario, contacta con tu supervisor
+                Si no tienes usuario, contacta con dirección
               </p>
             </div>
           </form>

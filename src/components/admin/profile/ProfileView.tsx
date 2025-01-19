@@ -91,7 +91,7 @@ export function ProfileView() {
               <h3 className="text-lg font-medium text-gray-900">Calendario Laboral</h3>
             </div>
             <p className="text-sm text-gray-500">
-              Consulta tu calendario laboral y gestiona tus horarios.
+              Consulta y descarga tu calendario laboral.
             </p>
             <button className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
               Ver Calendario
@@ -106,7 +106,7 @@ export function ProfileView() {
               <h3 className="text-lg font-medium text-gray-900">Tarjeta de Fichar</h3>
             </div>
             <p className="text-sm text-gray-500">
-              Gestiona tu tarjeta de fichar y consulta tus registros.
+              Visualiza tu tarjeta de fichar.
             </p>
             <button className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
               Ver Tarjeta

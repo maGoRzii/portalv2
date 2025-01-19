@@ -12,7 +12,7 @@ export function AdminLoginButton() {
                  rounded-lg transition-all duration-200 flex items-center gap-2"
     >
       <LogIn className="h-4 w-4 stroke-[1.5]" />
-      <span>Admin</span>
+      <span>Iniciar sesión</span>
     </button>
   );
 }
