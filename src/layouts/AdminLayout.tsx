@@ -17,6 +17,7 @@ import { FeatureFlags } from '../components/admin/FeatureFlags';
 import { RoleManagement } from '../components/admin/RoleManagement';
 import { PrintSubmission } from '../pages/PrintSubmission';
 import { PrintSummary } from '../pages/PrintSummary';
+import { ProfileView } from '../components/admin/profile/ProfileView';
 import { useAuth } from '../hooks/useAuth';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 
@@ -38,6 +39,7 @@ export function AdminLayout() {
           <div className="col-span-12 md:col-span-9 lg:col-span-10">
             <Routes>
               <Route index element={<WelcomeDashboard />} />
+              <Route path="profile" element={<ProfileView />} />
               <Route path="holidays" element={<ProtectedRoute requiredPermission="holidays"><HolidaySubmissions /></ProtectedRoute>} />
               <Route path="uniforms" element={<ProtectedRoute requiredPermission="uniforms"><UniformSubmissions /></ProtectedRoute>} />
               <Route path="lanzadera" element={<ProtectedRoute requiredPermission="lanzadera"><LanzaderaRequests /></ProtectedRoute>} />

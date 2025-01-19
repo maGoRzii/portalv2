@@ -29,12 +29,21 @@ export function useAuth() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (identifier: string, password: string) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+      // First try to sign in with the identifier as is (could be email)
+      let { data, error } = await supabase.auth.signInWithPassword({
+        email: identifier,
         password,
       });
+
+      // If that fails and the identifier doesn't contain @, try with @jonquera16549.es
+      if (error && !identifier.includes('@')) {
+        ({ data, error } = await supabase.auth.signInWithPassword({
+          email: `${identifier}@jonquera16549.es`,
+          password,
+        }));
+      }
 
       if (error) {
         if (error.message === 'Invalid login credentials') {
@@ -60,7 +69,6 @@ export function useAuth() {
     try {
       await supabase.auth.signOut();
       setUser(null);
-      // Usar navigate en el componente en lugar de window.location
       toast.success('Sesión cerrada');
     } catch (error) {
       console.error('Sign out error:', error);

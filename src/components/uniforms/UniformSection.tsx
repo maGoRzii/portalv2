@@ -4,11 +4,11 @@ import { UniformItem } from './UniformItem';
 
 interface UniformSectionProps {
   category: UniformCategory;
-  selectedItems: Record<string, string>;
+  selectedSizes: Record<string, string>;
   onItemSelect: (itemId: string, size: string) => void;
 }
 
-export function UniformSection({ category, selectedItems, onItemSelect }: UniformSectionProps) {
+export function UniformSection({ category, selectedSizes, onItemSelect }: UniformSectionProps) {
   return (
     <div className="animate-slide-in" style={{ opacity: 0, animationDelay: '100ms' }}>
       <h2 className="text-xl font-semibold text-gray-800 mb-4">
@@ -19,7 +19,7 @@ export function UniformSection({ category, selectedItems, onItemSelect }: Unifor
           <UniformItem
             key={item.id}
             item={item}
-            selectedSize={selectedItems[item.id]}
+            selectedSize={selectedSizes[item.id] || ''}
             onSelect={(size) => onItemSelect(item.id, size)}
           />
         ))}

@@ -19,7 +19,7 @@ export function DashboardHeader({ onLogout }: DashboardHeaderProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <h1 className="text-2xl font-light text-gray-900">
-            Panel de Administración
+            Panel de Control
           </h1>
           <button
             onClick={handleLogout}

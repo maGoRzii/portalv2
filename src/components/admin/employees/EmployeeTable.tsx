@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Edit2, Trash2 } from 'lucide-react';
+import { Edit2, Trash2, UserPlus } from 'lucide-react';
 import { Employee, ContractHoursModification } from '../../../types/hours';
 import { EmployeeDetailsModal } from './EmployeeDetailsModal';
+import { CreateUserModal } from './CreateUserModal';
 import { supabase } from '../../../lib/supabase';
 
 interface EmployeeTableProps {
@@ -12,10 +13,13 @@ interface EmployeeTableProps {
 
 export function EmployeeTable({ employees, onEdit, onDelete }: EmployeeTableProps) {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [creatingUserFor, setCreatingUserFor] = useState<Employee | null>(null);
   const [hoursModifications, setHoursModifications] = useState<Record<string, ContractHoursModification[]>>({});
+  const [userEmails, setUserEmails] = useState<Record<string, string>>({});
 
   useEffect(() => {
     loadHoursModifications();
+    loadUserEmails();
   }, [employees]);
 
   const loadHoursModifications = async () => {
@@ -28,7 +32,6 @@ export function EmployeeTable({ employees, onEdit, onDelete }: EmployeeTableProp
 
       if (error) throw error;
 
-      // Group modifications by employee_id
       const modsByEmployee = (data || []).reduce((acc, mod) => {
         if (!acc[mod.employee_id]) {
           acc[mod.employee_id] = [];
@@ -40,6 +43,28 @@ export function EmployeeTable({ employees, onEdit, onDelete }: EmployeeTableProp
       setHoursModifications(modsByEmployee);
     } catch (error) {
       console.error('Error loading hours modifications:', error);
+    }
+  };
+
+  const loadUserEmails = async () => {
+    try {
+      const { data: users, error } = await supabase
+        .from('auth_users_view')
+        .select('email, raw_user_meta_data');
+
+      if (error) throw error;
+
+      const emailsByEmployeeId = users.reduce((acc, user) => {
+        const employeeId = user.raw_user_meta_data?.employee_id;
+        if (employeeId) {
+          acc[employeeId] = user.email;
+        }
+        return acc;
+      }, {} as Record<string, string>);
+
+      setUserEmails(emailsByEmployeeId);
+    } catch (error) {
+      console.error('Error loading user emails:', error);
     }
   };
 
@@ -113,7 +138,7 @@ export function EmployeeTable({ employees, onEdit, onDelete }: EmployeeTableProp
                   Estado
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Contacto
+                  Usuario
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Acciones
@@ -123,6 +148,7 @@ export function EmployeeTable({ employees, onEdit, onDelete }: EmployeeTableProp
             <tbody className="bg-white divide-y divide-gray-200">
               {employees.map((employee) => {
                 const activeMod = getActiveModification(employee.id);
+                const hasUser = Boolean(userEmails[employee.id]);
                 return (
                   <tr 
                     key={employee.id} 
@@ -177,15 +203,20 @@ export function EmployeeTable({ employees, onEdit, onDelete }: EmployeeTableProp
                       {getStatusBadge(employee.status)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">
-                        {employee.email && (
-                          <div>{employee.email}</div>
-                        )}
-                        {employee.phone && (
-                          <div className="text-gray-400">{employee.phone}</div>
-                        )}
-                        {!employee.email && !employee.phone && '-'}
-                      </div>
+                      {hasUser ? (
+                        <span className="text-sm text-gray-500">{userEmails[employee.id]}</span>
+                      ) : (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCreatingUserFor(employee);
+                          }}
+                          className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800"
+                        >
+                          <UserPlus className="h-4 w-4" />
+                          <span className="text-sm">Crear usuario</span>
+                        </button>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
@@ -223,6 +254,14 @@ export function EmployeeTable({ employees, onEdit, onDelete }: EmployeeTableProp
             onEdit(employee);
             setSelectedEmployee(null);
           }}
+        />
+      )}
+
+      {creatingUserFor && (
+        <CreateUserModal
+          employee={creatingUserFor}
+          onClose={() => setCreatingUserFor(null)}
+          onSuccess={loadUserEmails}
         />
       )}
     </>

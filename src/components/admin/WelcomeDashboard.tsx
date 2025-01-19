@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useRole } from '../../hooks/useRole';
-import { GraduationCap, Calendar, Shirt, Truck, FileText, Users, Clock, Settings, Shield, Layout, Palmtree } from 'lucide-react';
+import { GraduationCap, Calendar, Shirt, Truck, FileText, Users, Clock, Settings, Shield, Layout, Palmtree, UserCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { VersionUpdatePopup } from './VersionUpdatePopup';
 import { useVersionPopup } from '../../hooks/useVersionPopup';
@@ -13,6 +13,14 @@ export function WelcomeDashboard() {
   const { showPopup, handleClose } = useVersionPopup();
 
   const modules = [
+    {
+      id: 'profile',
+      name: 'Mi Perfil',
+      description: 'Gestiona tu información personal y preferencias',
+      icon: UserCircle,
+      color: 'bg-gray-500',
+      path: '/admin/profile'
+    },
     {
       id: 'holidays',
       name: 'Festivos',
@@ -95,7 +103,9 @@ export function WelcomeDashboard() {
     }
   ];
 
-  const availableModules = modules.filter(module => hasPermission(module.id));
+  const availableModules = modules.filter(module => 
+    module.id === 'profile' || hasPermission(module.id)
+  );
 
   return (
     <div className="space-y-6">
@@ -104,7 +114,7 @@ export function WelcomeDashboard() {
           Bienvenido al Panel de Control
         </h1>
         <p className="mt-1 text-gray-500">
-          {user?.email}
+          {user?.user_metadata?.name || user?.email}
         </p>
       </div>
 
